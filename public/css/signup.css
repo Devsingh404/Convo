@@ -1,0 +1,70 @@
+/* Set background and center the form */
+body {
+    background-color: #9667E0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+}
+
+/* Container for form and link */
+.container {
+    background-color: #EEEAFD;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    text-align: center;
+}
+
+/* Heading */
+.container h2 {
+    margin-bottom: 20px;
+    color: #4A266A;
+}
+
+/* Input fields */
+form input[type="text"],
+form input[type="password"] {
+    width: 92%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+    background-color: #D8CAFD;
+    font-size: 14px;
+}
+
+/* Submit button */
+form input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #AC88E8;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form input[type="submit"]:hover {
+    background-color: #C2A9EF;
+}
+
+/* Login link at the top */
+.top-link {
+    display: block;
+    margin-bottom: 20px;
+    color: #4A266A;
+    font-size: 13px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.top-link:hover {
+    text-decoration: underline;
+}

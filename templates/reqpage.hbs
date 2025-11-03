@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests</title>
+    <link rel="stylesheet" href="/css/req.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="search-toggle-container">
+
+            <a href="/chat" class="btn-back">Back to Chat</a>
+
+            <div class="toggle-switch">
+                <input type="radio" id="sent" name="status" />
+                <label for="sent" class="toggle-label left">Sent</label>
+
+                <input type="radio" id="received" name="status" checked />
+                <label for="received" class="toggle-label right">Received</label>
+
+                <div class="toggle-slider"></div>
+            </div>
+
+            <div class="search-container">
+                <input type="text" placeholder="Search..." class="search-input" />
+                <button class="search-button">Search</button>
+            </div>
+
+        </div>
+
+
+        <div class="search-results" style="margin-top: 20px; display: flex; justify-content: center;"></div>
+
+
+
+
+        <div class="requests-wrapper" style="display: flex; gap: 10px; width: 80%; margin: auto;">
+            <div class="requests" style="flex: 1;">
+                <!-- received requests here -->
+                
+            </div>
+
+            <div class="sent-requests" style="flex: 1; display: none;">
+                <!-- sent requests here -->
+                
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+
+        const CURRENT_USERNAME = localStorage.getItem("username");
+        console.log("Current user is:", CURRENT_USERNAME);
+
+        const sentRadio = document.getElementById('sent');
+        const receivedRadio = document.getElementById('received');
+
+        const sentRequestsContainer = document.querySelector('.sent-requests');
+        const receivedRequestsContainer = document.querySelector('.requests');
+
+        // Toggle between sent and received
+        function toggleRequests() {
+            if (sentRadio.checked) {
+                sentRequestsContainer.style.display = 'flex';
+                receivedRequestsContainer.style.display = 'none';
+            } else {
+                sentRequestsContainer.style.display = 'none';
+                receivedRequestsContainer.style.display = 'flex';
+            }
+        }
+        sentRadio.addEventListener('change', toggleRequests);
+        receivedRadio.addEventListener('change', toggleRequests);
+        toggleRequests();
+
+
+        document.querySelector(".search-button").addEventListener("click", async () => {
+            const query = document.querySelector(".search-input").value.trim();
+            const resultsContainer = document.querySelector(".search-results");
+
+            if (!query) {
+                resultsContainer.innerHTML = "<p>Please enter a username.</p>";
+                return;
+            }
+
+            try {
+                const res = await fetch(`/search-user?username=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                if (data.exists) {
+                    resultsContainer.innerHTML = `
+                        <div class="user-result">
+                            <h3>${data.user.username}</h3>
+                            <button class="choice send-request" data-username="${data.user.username}">Send Request</button>
+                        </div>
+                    `;
+                } else {
+                    resultsContainer.innerHTML = "<p>No user found.</p>";
+                }
+
+
+
+            } catch (err) {
+                console.error(err);
+                resultsContainer.innerHTML = "<p>Error searching for user.</p>";
+            }
+        });
+
+        document.querySelector(".search-results").addEventListener("click", async (e) => {
+            if (e.target.classList.contains("send-request")) {
+                const to = e.target.dataset.username;
+                const from = CURRENT_USERNAME;
+                console.log("Send request called with:", from, "->", to);
+
+
+                try {
+                    const res = await fetch("http://localhost:8000/send-request", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ from, to })
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        e.target.textContent = "Request Sent ✅";
+                        e.target.disabled = true;
+                    } else {
+                        alert(data.error || "Something went wrong");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error sending request");
+                }
+            }
+        });
+
+        async function loadRequests() {
+            try {
+                const res = await fetch("/get-requests");
+                const data = await res.json();
+
+                // Clear previous content
+                receivedRequestsContainer.innerHTML = "";
+                sentRequestsContainer.innerHTML = "";
+
+                // Render received requests
+                if (data.received.length === 0) {
+                    receivedRequestsContainer.innerHTML = "<p>No requests yet</p>";
+                } else {
+                    data.received.forEach(name => {
+                        const div = document.createElement("div");
+                        div.classList.add("request");
+                        div.innerHTML = `
+                    <h3>${name}</h3>
+                    <p>wants to be your friend</p>
+                    <div class="buttons">
+                        <button class="choice accept-request" data-username="${name}">Accept</button>
+                        <button class="choice deny-request" data-username="${name}">Deny</button>
+                    </div>
+                `;
+                        receivedRequestsContainer.appendChild(div);
+                    });
+                }
+
+                // Render sent requests
+                if (data.sent.length === 0) {
+                    sentRequestsContainer.innerHTML = "<p>No requests yet</p>";
+                } else {
+                    data.sent.forEach(name => {
+                        const div = document.createElement("div");
+                        div.classList.add("sent-request");
+                        div.innerHTML = `<p>You sent a request to ${name}</p>`;
+                        sentRequestsContainer.appendChild(div);
+                    });
+                }
+
+                // Add event listeners for accept/deny
+                receivedRequestsContainer.querySelectorAll(".accept-request").forEach(btn => {
+                    btn.addEventListener("click", async () => {
+                        const to = btn.dataset.username;
+                        const from = CURRENT_USERNAME;
+                        const res = await fetch("/accept-request", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ from: to, to: from })
+                        });
+                        const result = await res.json();
+                        if (result.success) loadRequests();
+                        else alert(result.error || "Error");
+                    });
+                });
+
+                receivedRequestsContainer.querySelectorAll(".deny-request").forEach(btn => {
+                    btn.addEventListener("click", async () => {
+                        const to = btn.dataset.username;
+                        const from = CURRENT_USERNAME;
+                        const res = await fetch("/deny-request", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ from: to, to: from })
+                        });
+                        const result = await res.json();
+                        if (result.success) loadRequests();
+                        else alert(result.error || "Error");
+                    });
+                });
+
+            } catch (err) {
+                console.error(err);
+                receivedRequestsContainer.innerHTML = "<p>Error loading requests</p>";
+                sentRequestsContainer.innerHTML = "<p>Error loading requests</p>";
+            }
+        }
+
+        // Call on page load
+        loadRequests();
+
+    </script>
+
+
+</body>
+
+</html>

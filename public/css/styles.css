@@ -1,0 +1,194 @@
+body {
+    background-color: #9667E0;
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    height: 100vh;
+    overflow: hidden; /* prevent scroll */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.navbar {
+  position: relative; /* needed for absolute inside */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;  /* start, so flex items start on left */
+  padding: 5px 20px;
+  height: 60px; /* set navbar height */
+  background-color: transparent;
+  margin-top: 10px;
+  margin-bottom: -27px;
+}
+
+/* center the logo+header absolutely centered */
+.center-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none; /* optional: avoid overlapping clicks */
+  user-select: none;
+  color: antiquewhite;
+}
+
+/* Requests button aligned right */
+.btn-requests {
+  margin-left: auto;  /* push to the right */
+  z-index: 2;         /* make sure it’s on top */
+  padding: 8px 15px;
+  background-color: #7a4ebd;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  pointer-events: auto; /* re-enable pointer events */
+  border: 1px solid white;
+}
+
+.btn-requests:hover {
+  background-color: #553a7f;
+}
+
+.logo{
+    width: 40px;
+    height: 40px;
+}
+
+
+
+.main {
+  flex: 1;         /* fill vertical space */
+  display: flex;
+  gap: 15px;
+  padding: 40px;
+  /* REMOVE height: 100vh; */
+  overflow: hidden; /* prevent overflow, so only msgcontainer scrolls */
+}
+
+.left {
+    width: 25%;
+    background-color: #C2A9EF;
+    border-radius: 10px;
+    overflow-y: auto;
+}
+
+.chatlist {
+    padding: 10px;
+    /* justify-content: center;
+    align-items: center; */
+}
+
+.chats {
+    background-color: #e4d2ff;
+    /* width: 90%; */
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 8px -1px #5A00EA;
+}
+
+.chats h5 {
+    margin: 0 0 6px 0;
+}
+
+.chats p {
+    margin: 0;
+    font-size: 14px;
+    color: #3a2459;
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;   /* ensure full height */
+}
+
+.msgcontainer {
+    flex: 1;
+    background-color: #C2A9EF;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px 3px #5A00EA;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;           /* ADD THIS */
+    flex-direction: column;  /* ADD THIS */
+}
+
+.message {
+    max-width: 60%;
+    padding: 10px 15px;
+    margin: 8px 0;
+    border-radius: 15px;
+    box-shadow: 0 0 15px 3px #AC88E8;
+    background-color: rgb(240, 227, 249);
+    word-wrap: break-word;
+
+    display: inline-block;  /* good */
+    flex-grow: 0;           /* ADD THIS */
+    flex-shrink: 0;         /* ADD THIS */
+    height: auto;           /* ADD THIS */
+}
+
+
+.message.left {
+  align-self: flex-start;  /* message aligned to left */
+}
+
+.message.right {
+  align-self: flex-end;    /* message aligned to right */
+  background-color: #d3c1f7;
+}
+
+
+.send {
+  flex-shrink: 0;    /* prevent shrinking */
+  display: flex;
+  padding-top: 10px;
+}
+
+#send-container {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+}
+
+#msginp {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid white;
+    font-size: 16px;
+    outline: none;
+}
+
+#msginp::placeholder {
+    color: #6a5296;
+}
+
+.btn {
+    padding: 8px 25px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: 1px solid white;
+    background-color: #7a4ebd;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #553a7f;
+}
+
